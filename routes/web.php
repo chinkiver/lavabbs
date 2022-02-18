@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,4 +18,4 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', 'PagesController@root')->name('root');
 
 // 认证脚手架所生成的路由
-Auth::routes();
+Auth::routes(['verify' => true]);
