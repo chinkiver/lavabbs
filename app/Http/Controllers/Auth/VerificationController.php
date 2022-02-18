@@ -35,8 +35,13 @@ class VerificationController extends Controller
      */
     public function __construct()
     {
+        // 用户必须登录
         $this->middleware('auth');
+
+        // URL 签名
         $this->middleware('signed')->only('verify');
+
+        // 限制请求次数（1分钟不能超过6次）
         $this->middleware('throttle:6,1')->only('verify', 'resend');
     }
 }
