@@ -13,4 +13,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// 首页
 Route::get('/', 'PagesController@root')->name('root');
+
+// 认证脚手架所生成的路由
+Auth::routes();
