@@ -19,3 +19,8 @@ Route::get('/', 'PagesController@root')->name('root');
 
 // 认证脚手架所生成的路由
 Auth::routes(['verify' => true]);
+
+// 用户管理
+Route::resource('/users', 'UsersController', [
+    'only' => ['show', 'update', 'edit'],
+]);
