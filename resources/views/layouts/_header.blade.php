@@ -26,12 +26,12 @@
               {{ Auth::user()->name }}
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="">个人中心</a>
-              <a class="dropdown-item" href="">编辑资料</a>
+              <a class="dropdown-item" href="{{ route('users.show', Auth::user()) }}">个人中心</a>
+              <a class="dropdown-item" href="{{ route('users.edit', Auth::user()) }}">编辑资料</a>
               <div class="dropdown-divider"></div>
               <a class="dropdown-item" id="logout" href="#">
                 <form action="{{ route('logout') }}" method="POST">
-                  {{ csrf_field() }}
+                  @csrf
                   <button class="btn btn-block btn-danger" type="submit" name="button">退出</button>
                 </form>
               </a>
