@@ -12,6 +12,11 @@ class UserRequest extends FormRequest
         return true;
     }
 
+    /**
+     * 验证规则
+     *
+     * @return \string[][]
+     */
     public function rules()
     {
         return [
@@ -21,6 +26,9 @@ class UserRequest extends FormRequest
         ];
     }
 
+    /**
+     * 自定义错误信息
+     */
     public function messages()
     {
         return [
