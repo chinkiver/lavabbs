@@ -8,6 +8,14 @@ use App\Handlers\ImageUploadHandler;
 
 class UsersController extends Controller
 {
+    public function __construct()
+    {
+        // 登录中间件
+        $this->middleware('auth', [
+            'except' => ['show'], // 除了显示用户详细，其他都需要登录
+        ]);
+    }
+
     /**
      * 显示用户详细信息
      *
@@ -29,6 +37,9 @@ class UsersController extends Controller
      */
     public function edit(User $user)
     {
+        // 判断是否为其他用户
+        $this->authorize('canEdit', $user);
+
         return view('users.edit', compact('user'));
     }
 
@@ -43,6 +54,9 @@ class UsersController extends Controller
      */
     public function update(UserRequest $request, ImageUploadHandler $uploadHandler, User $user)
     {
+        // 判断是否为其他用户
+        $this->authorize('canEdit', $user);
+
         // 获取全部表单信息
         $data = $request->all();
 
