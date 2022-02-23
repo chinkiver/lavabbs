@@ -12,16 +12,17 @@ class ImageUploadHandler
     /**
      * 上传文件
      *
-     * @param $file
-     * @param $folder
-     * @param $filePrefix
+     * @param      $file
+     * @param      $folder
+     * @param      $filePrefix
+     * @param bool $maxWidth
      *
      * @return false|string[]
      */
     public function store($file, $folder, $filePrefix, $maxWidth = false)
     {
         // 构建存储文件夹规则
-        $folderName = "uploads/images/$folder" . date("Ym/d", time());
+        $folderName = "uploads/images/$folder/" . date("Ym/d", time());
 
         // 物理存储地址
         $uploadDiskPath = public_path() . '/' . $folderName;

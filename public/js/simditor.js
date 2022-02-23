@@ -1,18 +1,23 @@
+/*!
+* Simditor v2.3.6
+* http://simditor.tower.im/
+* 2015-12-21
+*/
 (function (root, factory) {
   if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous module unless amdModuleId is set
-    define('simditor', ["jquery","simple-module","simple-hotkeys","simple-uploader","dompurify"], function ($, SimpleModule, simpleHotkeys, simpleUploader, DOMPurify) {
-      return (root['Simditor'] = factory($, SimpleModule, simpleHotkeys, simpleUploader, DOMPurify));
+    define('simditor', ["jquery","simple-module","simple-hotkeys","simple-uploader"], function ($, SimpleModule, simpleHotkeys, simpleUploader) {
+      return (root['Simditor'] = factory($, SimpleModule, simpleHotkeys, simpleUploader));
     });
   } else if (typeof exports === 'object') {
     // Node. Does not work with strict CommonJS, but
     // only CommonJS-like environments that support module.exports,
     // like Node.
-    module.exports = factory(require("jquery"),require("simple-module"),require("simple-hotkeys"),require("simple-uploader"),require("dompurify"));
+    module.exports = factory(require("jquery"),require("simple-module"),require("simple-hotkeys"),require("simple-uploader"));
   } else {
-    root['Simditor'] = factory(jQuery,SimpleModule,simple.hotkeys,simple.uploader,window.DOMPurify);
+    root['Simditor'] = factory(jQuery,SimpleModule,simple.hotkeys,simple.uploader);
   }
-}(this, function ($, SimpleModule, simpleHotkeys, simpleUploader, DOMPurify) {
+}(this, function ($, SimpleModule, simpleHotkeys, simpleUploader) {
 
 var AlignmentButton, BlockquoteButton, BoldButton, Button, Clipboard, CodeButton, CodePopover, ColorButton, FontScaleButton, Formatter, HrButton, ImageButton, ImagePopover, IndentButton, Indentation, InputManager, ItalicButton, Keystroke, LinkButton, LinkPopover, ListButton, OrderListButton, OutdentButton, Popover, Selection, Simditor, StrikethroughButton, TableButton, TitleButton, Toolbar, UnderlineButton, UndoManager, UnorderListButton, Util,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -52,15 +57,9 @@ Selection = (function(superClass) {
         return _this._range = _this._selection.getRangeAt(0);
       };
     })(this));
-    this.editor.on('blur', (function(_this) {
+    return this.editor.on('blur', (function(_this) {
       return function(e) {
         return _this.reset();
-      };
-    })(this));
-    return this.editor.on('focus', (function(_this) {
-      return function(e) {
-        _this.reset();
-        return _this._range = _this._selection.getRangeAt(0);
       };
     })(this));
   };
@@ -335,9 +334,6 @@ Selection = (function(superClass) {
     }
     $node = $(node);
     node = $node[0];
-    if (!node) {
-      return;
-    }
     if ($node.is('pre')) {
       contents = $node.contents();
       if (contents.length > 0) {
@@ -485,11 +481,11 @@ Formatter = (function(superClass) {
     }, this.opts.allowedAttributes);
     this._allowedStyles = $.extend({
       span: ['color', 'font-size'],
-      b: ['color', 'font-size'],
-      i: ['color', 'font-size'],
-      strong: ['color', 'font-size'],
-      strike: ['color', 'font-size'],
-      u: ['color', 'font-size'],
+      b: ['color'],
+      i: ['color'],
+      strong: ['color'],
+      strike: ['color'],
+      u: ['color'],
       p: ['margin-left', 'text-align'],
       h1: ['margin-left', 'text-align'],
       h2: ['margin-left', 'text-align'],
@@ -654,13 +650,8 @@ Formatter = (function(superClass) {
           }
         }
         this._cleanNodeStyles($node);
-        if ($node.is('span')) {
-          if ($node[0].attributes.length === 0) {
-            $node.contents().first().unwrap();
-          }
-          if ($node[0].style.length === 2 && $node[0].style.color === 'rgb(51, 51, 51)' && $node[0].style.fontSize === '16px') {
-            $node.contents().unwrap();
-          }
+        if ($node.is('span') && $node[0].attributes.length === 0) {
+          $node.contents().first().unwrap();
         }
       }
     } else if ($node[0].nodeType === 1 && !$node.is(':empty')) {
@@ -713,13 +704,8 @@ Formatter = (function(superClass) {
       style = ref[k];
       style = $.trim(style);
       pair = style.split(':');
-      if (pair.length !== 2) {
+      if (!(pair.length = 2)) {
         continue;
-      }
-      if (pair[0] === 'font-size' && pair[1].indexOf('px') > 0) {
-        if (parseInt(pair[1], 10) < 12) {
-          continue;
-        }
       }
       if (ref1 = pair[0], indexOf.call(allowedStyles, ref1) >= 0) {
         styles[$.trim(pair[0])] = $.trim(pair[1]);
@@ -905,7 +891,6 @@ InputManager = (function(superClass) {
     submitKey = this.editor.util.os.mac ? 'cmd+enter' : 'ctrl+enter';
     return this.editor.hotkeys.add(submitKey, (function(_this) {
       return function(e) {
-        _this.editor.sync();
         _this.editor.el.closest('form').find('button:submit').click();
         return false;
       };
@@ -1128,35 +1113,12 @@ Keystroke = (function(superClass) {
           return true;
         }
         $blockEl = _this.editor.selection.blockNodes().last();
-        if ($blockEl.is('.simditor-resize-handle') && $rootBlock.is('.simditor-table')) {
-          e.preventDefault();
-          $rootBlock.remove();
-          _this.editor.selection.setRangeAtEndOf($prevBlockEl);
-        }
-        if ($prevBlockEl.is('.simditor-table') && !$blockEl.is('table') && _this.editor.util.isEmptyNode($blockEl)) {
-          e.preventDefault();
-          $blockEl.remove();
-          _this.editor.selection.setRangeAtEndOf($prevBlockEl);
-        }
         isWebkit = _this.editor.util.browser.webkit;
         if (isWebkit && _this.editor.selection.rangeAtStartOf($blockEl)) {
           _this.editor.selection.save();
           _this.editor.formatter.cleanNode($blockEl, true);
           _this.editor.selection.restore();
           return null;
-        }
-      };
-    })(this));
-    this.add('enter', 'div', (function(_this) {
-      return function(e, $node) {
-        var $blockEl, $p;
-        if ($node.is('.simditor-table')) {
-          $blockEl = _this.editor.selection.blockNodes().last();
-          if ($blockEl.is('.simditor-resize-handle')) {
-            e.preventDefault();
-            $p = $('<p/>').append(_this.editor.util.phBr).insertAfter($node);
-            return _this.editor.selection.setRangeAtStartOf($p);
-          }
         }
       };
     })(this));
@@ -1200,11 +1162,7 @@ Keystroke = (function(superClass) {
         if ($node.prev('li').length) {
           $node.remove();
         } else {
-          if ($node.prev('ul').length || $node.prev('ol').length) {
-            $node.remove();
-          } else {
-            listEl.remove();
-          }
+          listEl.remove();
         }
         _this.editor.selection.setRangeAtStartOf(newBlockEl);
         return true;
@@ -1224,11 +1182,13 @@ Keystroke = (function(superClass) {
         range.deleteContents();
         if (!_this.editor.util.browser.msie && _this.editor.selection.rangeAtEndOf($node)) {
           breakNode = document.createTextNode('\n\n');
+          range.insertNode(breakNode);
+          range.setEnd(breakNode, 1);
         } else {
           breakNode = document.createTextNode('\n');
+          range.insertNode(breakNode);
+          range.setStartAfter(breakNode);
         }
-        range.insertNode(breakNode);
-        range.setEnd(breakNode, 1);
         range.collapse(false);
         _this.editor.selection.range(range);
         return true;
@@ -1572,7 +1532,7 @@ UndoManager = (function(superClass) {
       offset = ref[i];
       childNodes = node.childNodes;
       if (offset > childNodes.length - 1) {
-        if (i === position.length - 2 && $(node).is(':empty')) {
+        if (i === position.length - 2 && $(node).is('pre:empty')) {
           child = document.createTextNode('');
           node.appendChild(child);
           childNodes = node.childNodes;
@@ -1611,8 +1571,8 @@ UndoManager = (function(superClass) {
       }
       if (!startContainer || !endContainer) {
         if (typeof console !== "undefined" && console !== null) {
-          if (typeof console.info === "function") {
-            console.info('simditor: invalid caret state');
+          if (typeof console.warn === "function") {
+            console.warn('simditor: invalid caret state');
           }
         }
         return;
@@ -1749,7 +1709,7 @@ Util = (function(superClass) {
   Util.prototype.isEmptyNode = function(node) {
     var $node;
     $node = $(node);
-    return $node.is(':empty') || (!$node.text() && !$node.find(':not(br, span, div, b, a, strong, i, strike, font, u)').length);
+    return $node.is(':empty') || (!$node.text() && !$node.find(':not(br, span, div)').length);
   };
 
   Util.prototype.isDecoratedNode = function(node) {
@@ -1919,8 +1879,7 @@ Toolbar = (function(superClass) {
     toolbar: true,
     toolbarFloat: true,
     toolbarHidden: false,
-    toolbarFloatOffset: 0,
-    toolbarScrollContainer: window
+    toolbarFloatOffset: 0
   };
 
   Toolbar.prototype._tpl = {
@@ -1929,7 +1888,7 @@ Toolbar = (function(superClass) {
   };
 
   Toolbar.prototype._init = function() {
-    var floatInitialized, initToolbarFloat, scrollContainerOffset, toolbarHeight;
+    var floatInitialized, initToolbarFloat, toolbarHeight;
     this.editor = this._module;
     if (!this.opts.toolbar) {
       return;
@@ -1952,11 +1911,7 @@ Toolbar = (function(superClass) {
       };
     })(this));
     if (!this.opts.toolbarHidden && this.opts.toolbarFloat) {
-      scrollContainerOffset = this.opts.toolbarScrollContainer === window ? {
-        top: 0,
-        left: 0
-      } : $(this.opts.toolbarScrollContainer).offset();
-      this.wrapper.css('top', scrollContainerOffset.top + this.opts.toolbarFloatOffset);
+      this.wrapper.css('top', this.opts.toolbarFloatOffset);
       toolbarHeight = 0;
       initToolbarFloat = (function(_this) {
         return function() {
@@ -1964,10 +1919,10 @@ Toolbar = (function(superClass) {
           _this.wrapper.width('auto');
           _this.editor.util.reflow(_this.wrapper);
           _this.wrapper.width(_this.wrapper.outerWidth());
-          _this.wrapper.css('left', _this.editor.util.os.mobile ? _this.wrapper.position().left : _this.wrapper.offset().left - scrollContainerOffset.left);
+          _this.wrapper.css('left', _this.editor.util.os.mobile ? _this.wrapper.position().left : _this.wrapper.offset().left);
           _this.wrapper.css('position', '');
           toolbarHeight = _this.wrapper.outerHeight();
-          _this.editor.placeholderEl.css('top', scrollContainerOffset.top);
+          _this.editor.placeholderEl.css('top', toolbarHeight);
           return true;
         };
       })(this);
@@ -1975,16 +1930,16 @@ Toolbar = (function(superClass) {
       $(window).on('resize.simditor-' + this.editor.id, function(e) {
         return floatInitialized = initToolbarFloat();
       });
-      $(this.opts.toolbarScrollContainer).on('scroll.simditor-' + this.editor.id, (function(_this) {
+      $(window).on('scroll.simditor-' + this.editor.id, (function(_this) {
         return function(e) {
           var bottomEdge, scrollTop, topEdge;
           if (!_this.wrapper.is(':visible')) {
             return;
           }
-          topEdge = _this.opts.toolbarScrollContainer === window ? _this.editor.wrapper.get(0).getBoundingClientRect().top : _this.editor.wrapper.offset().top - scrollContainerOffset.top;
+          topEdge = _this.editor.wrapper.offset().top;
           bottomEdge = topEdge + _this.editor.wrapper.outerHeight() - 80;
-          scrollTop = $(_this.opts.toolbarScrollContainer).scrollTop() + _this.opts.toolbarFloatOffset;
-          if (topEdge > 0 || bottomEdge < 0) {
+          scrollTop = $(document).scrollTop() + _this.opts.toolbarFloatOffset;
+          if (scrollTop <= topEdge || scrollTop >= bottomEdge) {
             _this.editor.wrapper.removeClass('toolbar-floating').css('padding-top', '');
             if (_this.editor.util.os.mobile) {
               return _this.wrapper.css('top', _this.opts.toolbarFloatOffset);
@@ -2267,7 +2222,7 @@ Clipboard = (function(superClass) {
     }
     return this.editor.body.on('paste', (function(_this) {
       return function(e) {
-        var pasteBinAnchor, range;
+        var range;
         if (_this.pasting || _this._pasteBin) {
           return;
         }
@@ -2282,17 +2237,10 @@ Clipboard = (function(superClass) {
         } else {
           _this.editor.formatter.format();
           _this.editor.selection.setRangeAtStartOf(_this.editor.body.find('p:first'));
-          range = _this.editor.selection._range;
         }
         if (_this._processPasteByClipboardApi(e)) {
           return false;
         }
-        pasteBinAnchor = $('<span>');
-        range.insertNode(pasteBinAnchor[0]);
-        _this._createPasteBin(pasteBinAnchor);
-        pasteBinAnchor.remove();
-        range.collapse(true);
-        _this.editor.selection.range(range);
         _this.editor.inputManager.throttledValueChanged.clear();
         _this.editor.inputManager.throttledSelectionChanged.clear();
         _this.editor.undoManager.throttledPushState.clear();
@@ -2311,6 +2259,9 @@ Clipboard = (function(superClass) {
 
   Clipboard.prototype._processPasteByClipboardApi = function(e) {
     var imageFile, pasteItem, ref, uploadOpt;
+    if (this.editor.util.browser.edge) {
+      return;
+    }
     if (e.originalEvent.clipboardData && e.originalEvent.clipboardData.items && e.originalEvent.clipboardData.items.length > 0) {
       pasteItem = e.originalEvent.clipboardData.items[0];
       if (/^image\//.test(pasteItem.type)) {
@@ -2334,18 +2285,9 @@ Clipboard = (function(superClass) {
     }
   };
 
-  Clipboard.prototype._createPasteBin = function(anchorNode) {
-    var anchorOffset, editorOffset;
-    anchorOffset = anchorNode.offset();
-    editorOffset = this.editor.el.offset();
-    return this._pasteBin = $('<div contenteditable="true" />').addClass('simditor-paste-bin').attr('tabIndex', '-1').css({
-      top: anchorOffset.top - editorOffset.top,
-      left: anchorOffset.left - editorOffset.left
-    }).appendTo(this.editor.el);
-  };
-
   Clipboard.prototype._getPasteContent = function(callback) {
     var state;
+    this._pasteBin = $('<div contenteditable="true" />').addClass('simditor-paste-bin').attr('tabIndex', '-1').appendTo(this.editor.el);
     state = {
       html: this.editor.body.html(),
       caret: this.editor.undoManager.caretPosition()
@@ -2355,7 +2297,7 @@ Clipboard = (function(superClass) {
       return function() {
         var pasteContent;
         _this.editor.hidePopover();
-        _this.editor.body.get(0).innerHTML = DOMPurify ? DOMPurify.sanitize(state.html) : state.html;
+        _this.editor.body.get(0).innerHTML = state.html;
         _this.editor.undoManager.caretPosition(state.caret);
         _this.editor.body.focus();
         _this.editor.selection.reset();
@@ -2366,9 +2308,7 @@ Clipboard = (function(superClass) {
           pasteContent = _this.editor.formatter.clearHtml(_this._pasteBin.html(), true);
         } else {
           pasteContent = $('<div/>').append(_this._pasteBin.contents());
-          pasteContent.find('style').remove();
           pasteContent.find('table colgroup').remove();
-          _this._cleanPasteFontSize(pasteContent);
           _this.editor.formatter.format(pasteContent);
           _this.editor.formatter.decorate(pasteContent);
           _this.editor.formatter.beautify(pasteContent.children());
@@ -2382,15 +2322,14 @@ Clipboard = (function(superClass) {
   };
 
   Clipboard.prototype._processPasteContent = function(pasteContent) {
-    var $blockEl, $img, blob, children, dataURLtoBlob, img, insertPosition, k, l, lastLine, len, len1, len2, len3, len4, line, lines, m, node, o, q, ref, ref1, ref2, uploadOpt, uploader;
+    var $blockEl, $img, blob, children, insertPosition, k, l, lastLine, len, len1, len2, len3, len4, line, lines, m, node, o, q, ref, ref1, ref2, uploadOpt;
     if (this.editor.triggerHandler('pasting', [pasteContent]) === false) {
       return;
     }
     $blockEl = this._pasteInBlockEl;
     if (!pasteContent) {
       return;
-    }
-    if (this._pastePlainText) {
+    } else if (this._pastePlainText) {
       if ($blockEl.is('table')) {
         lines = pasteContent.split('\n');
         lastLine = lines.pop();
@@ -2418,11 +2357,6 @@ Clipboard = (function(superClass) {
     } else if (pasteContent.length === 1) {
       if (pasteContent.is('p')) {
         children = pasteContent.contents();
-        if ($blockEl.is('h1, h2, h3, h4, h5')) {
-          if (children.length) {
-            children.css('font-size', '');
-          }
-        }
         if (children.length === 1 && children.is('img')) {
           $img = children;
           if (/^data:image/.test($img.attr('src'))) {
@@ -2436,29 +2370,6 @@ Clipboard = (function(superClass) {
             if ((ref1 = this.editor.uploader) != null) {
               ref1.upload(blob, uploadOpt);
             }
-            return;
-          } else if (new RegExp('^blob:' + location.origin + '/').test($img.attr('src'))) {
-            if (!this.opts.pasteImage) {
-              return;
-            }
-            uploadOpt = {};
-            uploadOpt[this.opts.pasteImage] = true;
-            dataURLtoBlob = this.editor.util.dataURLtoBlob;
-            uploader = this.editor.uploader;
-            img = new Image;
-            img.onload = function() {
-              var canvas;
-              canvas = document.createElement('canvas');
-              canvas.width = img.naturalWidth;
-              canvas.height = img.naturalHeight;
-              canvas.getContext('2d').drawImage(img, 0, 0);
-              blob = dataURLtoBlob(canvas.toDataURL('image/png'));
-              blob.name = 'Clipboard Image.png';
-              if (uploader !== null) {
-                uploader.upload(blob, uploadOpt);
-              }
-            };
-            img.src = $img.attr('src');
             return;
           } else if ($img.is('img[src^="webkit-fake-url://"]')) {
             return;
@@ -2508,22 +2419,6 @@ Clipboard = (function(superClass) {
     return this.editor.inputManager.throttledValueChanged();
   };
 
-  Clipboard.prototype._cleanPasteFontSize = function(node) {
-    var $node, sizeMap;
-    $node = $(node);
-    if (!($node.length > 0)) {
-      return;
-    }
-    sizeMap = ['1.5em', '1.25em', '0.75em', '0.5em'];
-    return $node.find('[style*="font-size"]').map(function(i, el) {
-      var $el;
-      $el = $(el);
-      if ($.inArray($el.css('font-size'), sizeMap) < 0) {
-        return $el.css('font-size', '');
-      }
-    });
-  };
-
   return Clipboard;
 
 })(SimpleModule);
@@ -2565,7 +2460,7 @@ Simditor = (function(superClass) {
   };
 
   Simditor.prototype._init = function() {
-    var e, editor, uploadOpts;
+    var e, editor, form, uploadOpts;
     this.textarea = $(this.opts.textarea);
     this.opts.placeholder = this.opts.placeholder || this.textarea.attr('placeholder');
     if (!this.textarea.length) {
@@ -2589,6 +2484,19 @@ Simditor = (function(superClass) {
     if (this.opts.upload && simpleUploader) {
       uploadOpts = typeof this.opts.upload === 'object' ? this.opts.upload : {};
       this.uploader = simpleUploader(uploadOpts);
+    }
+    form = this.textarea.closest('form');
+    if (form.length) {
+      form.on('submit.simditor-' + this.id, (function(_this) {
+        return function() {
+          return _this.sync();
+        };
+      })(this));
+      form.on('reset.simditor-' + this.id, (function(_this) {
+        return function() {
+          return _this.setValue('');
+        };
+      })(this));
     }
     this.on('initialized', (function(_this) {
       return function() {
@@ -2662,7 +2570,7 @@ Simditor = (function(superClass) {
   Simditor.prototype.setValue = function(val) {
     this.hidePopover();
     this.textarea.val(val);
-    this.body.get(0).innerHTML = DOMPurify ? DOMPurify.sanitize(val) : val;
+    this.body.get(0).innerHTML = val;
     this.formatter.format();
     this.formatter.decorate();
     this.util.reflow(this.body);
@@ -2776,8 +2684,8 @@ Simditor.i18n = {
     'linkText': '链接文字',
     'linkUrl': '链接地址',
     'linkTarget': '打开方式',
-    'openLinkInCurrentWindow': '在当前窗口中打开',
-    'openLinkInNewWindow': '在新窗口中打开',
+    'openLinkInCurrentWindow': '在新窗口中打开',
+    'openLinkInNewWindow': '在当前窗口中打开',
     'removeLink': '移除链接',
     'ol': '有序列表',
     'ul': '无序列表',
@@ -2906,11 +2814,8 @@ Button = (function(superClass) {
         var exceed, noFocus, param;
         e.preventDefault();
         noFocus = _this.needFocus && !_this.editor.inputManager.focused;
-        if (_this.el.hasClass('disabled')) {
+        if (_this.el.hasClass('disabled') || noFocus) {
           return false;
-        }
-        if (noFocus) {
-          _this.editor.focus();
         }
         if (_this.menu) {
           _this.wrapper.toggleClass('menu-on').siblings('li').removeClass('menu-on');
@@ -3170,7 +3075,7 @@ Popover = (function(superClass) {
     }
     this.el.siblings('.simditor-popover').each(function(i, popover) {
       popover = $(popover).data('popover');
-      if (popover && popover.active) {
+      if (popover.active) {
         return popover.hide();
       }
     });
@@ -3345,9 +3250,9 @@ FontScaleButton = (function(superClass) {
 
   FontScaleButton.prototype.icon = 'font';
 
-  FontScaleButton.prototype.htmlTag = 'span';
+  FontScaleButton.prototype.disableTag = 'pre';
 
-  FontScaleButton.prototype.disableTag = 'pre, h1, h2, h3, h4, h5';
+  FontScaleButton.prototype.htmlTag = 'span';
 
   FontScaleButton.prototype.sizeMap = {
     'x-large': '1.5em',
@@ -3401,7 +3306,6 @@ FontScaleButton = (function(superClass) {
     if (range.collapsed) {
       return;
     }
-    this.editor.selection.range(range);
     document.execCommand('styleWithCSS', false, true);
     document.execCommand('fontSize', false, param);
     document.execCommand('styleWithCSS', false, false);
@@ -3421,11 +3325,7 @@ FontScaleButton = (function(superClass) {
         if (/large|x-large|small|x-small/.test(size)) {
           return $span.css('fontSize', _this.sizeMap[size]);
         } else if (size === 'medium') {
-          if ($span[0].style.length > 1) {
-            return $span.css('fontSize', '');
-          } else {
-            return $span.replaceWith($span.contents());
-          }
+          return $span.replaceWith($span.contents());
         }
       };
     })(this));
@@ -3632,8 +3532,8 @@ ColorButton = (function(superClass) {
           textNode = document.createTextNode(_this._t('coloredText'));
           range.insertNode(textNode);
           range.selectNodeContents(textNode);
+          _this.editor.selection.range(range);
         }
-        _this.editor.selection.range(range);
         document.execCommand('styleWithCSS', false, true);
         document.execCommand('foreColor', false, hex);
         document.execCommand('styleWithCSS', false, false);
@@ -4174,7 +4074,7 @@ LinkButton = (function(superClass) {
       $contents = $(range.extractContents());
       linkText = this.editor.formatter.clearHtml($contents.contents(), false);
       $link = $('<a/>', {
-        href: '',
+        href: 'http://www.example.com',
         target: '_blank',
         text: linkText || this._t('linkText')
       });
@@ -4236,7 +4136,7 @@ LinkPopover = (function(superClass) {
           return;
         }
         val = _this.urlEl.val();
-        if (!(/^(http|https|ftp|ftps|file)?:\/\/|^(mailto|tel)?:|^\//ig.test(val) || !val)) {
+        if (!(/https?:\/\/|^\//ig.test(val) || !val)) {
           val = 'http://' + val;
         }
         _this.target.attr('href', val);
@@ -4436,7 +4336,7 @@ ImageButton = (function(superClass) {
           type: 'file',
           title: _this._t('uploadImage'),
           multiple: true,
-          accept: 'image/gif,image/jpeg,image/jpg,image/png,image/svg'
+          accept: 'image/*'
         }).appendTo($uploadItem);
       };
     })(this);
@@ -4502,7 +4402,7 @@ ImageButton = (function(superClass) {
         return;
       }
       $img = $mask.data('img');
-      if (!($img && $img.hasClass('uploading') && $img.parent().length > 0)) {
+      if (!($img.hasClass('uploading') && $img.parent().length > 0)) {
         $mask.remove();
         return;
       }
@@ -4578,6 +4478,7 @@ ImageButton = (function(superClass) {
             e = _error;
             msg = _this._t('uploadError');
           }
+          alert(msg);
         }
         $img = file.img;
         if (!($img.hasClass('uploading') && $img.parent().length > 0)) {
@@ -4666,7 +4567,7 @@ ImageButton = (function(superClass) {
       $mask.remove();
       return $img.removeData('mask').removeClass('loading');
     };
-    return img.setAttribute('src', src);
+    return img.src = src;
   };
 
   ImageButton.prototype.createImage = function(name) {
@@ -4831,7 +4732,7 @@ ImagePopover = (function(superClass) {
           type: 'file',
           title: _this._t('uploadImage'),
           multiple: true,
-          accept: 'image/gif,image/jpeg,image/jpg,image/png,image/svg'
+          accept: 'image/*'
         }).appendTo($uploadBtn);
       };
     })(this);
@@ -4964,9 +4865,7 @@ IndentButton = (function(superClass) {
   IndentButton.prototype.icon = 'indent';
 
   IndentButton.prototype._init = function() {
-    var hotkey;
-    hotkey = this.editor.opts.tabIndent === false ? '' : ' (Tab)';
-    this.title = this._t(this.name) + hotkey;
+    this.title = this._t(this.name) + ' (Tab)';
     return IndentButton.__super__._init.call(this);
   };
 
@@ -4994,9 +4893,7 @@ OutdentButton = (function(superClass) {
   OutdentButton.prototype.icon = 'outdent';
 
   OutdentButton.prototype._init = function() {
-    var hotkey;
-    hotkey = this.editor.opts.tabIndent === false ? '' : ' (Shift + Tab)';
-    this.title = this._t(this.name) + hotkey;
+    this.title = this._t(this.name) + ' (Shift + Tab)';
     return OutdentButton.__super__._init.call(this);
   };
 
@@ -5081,7 +4978,6 @@ TableButton = (function(superClass) {
       th: ['text-align']
     });
     this._initShortcuts();
-    this._initResize();
     this.editor.on('decorate', (function(_this) {
       return function(e, $el) {
         return $el.find('table').each(function(i, table) {
@@ -5106,6 +5002,11 @@ TableButton = (function(superClass) {
         }
         $container = _this.editor.selection.containerNode();
         if (range.collapsed && $container.is('.simditor-table')) {
+          if (_this.editor.selection.rangeAtStartOf($container)) {
+            $container = $container.find('th:first');
+          } else {
+            $container = $container.find('td:last');
+          }
           _this.editor.selection.setRangeAtEndOf($container);
         }
         return $container.closest('td, th', _this.editor.body).addClass('active');
@@ -5176,14 +5077,24 @@ TableButton = (function(superClass) {
     return $prevTr;
   };
 
-  TableButton.prototype._initResize = function() {
-    var $editor;
-    $editor = this.editor;
-    $(document).on('mousemove.simditor-table', '.simditor-table td, .simditor-table th', function(e) {
-      var $col, $colgroup, $resizeHandle, $td, $wrapper, index, ref, ref1, x;
-      $wrapper = $(this).parents('.simditor-table');
-      $resizeHandle = $wrapper.find('.simditor-resize-handle');
-      $colgroup = $wrapper.find('colgroup');
+  TableButton.prototype.initResize = function($table) {
+    var $colgroup, $resizeHandle, $wrapper;
+    $wrapper = $table.parent('.simditor-table');
+    $colgroup = $table.find('colgroup');
+    if ($colgroup.length < 1) {
+      $colgroup = $('<colgroup/>').prependTo($table);
+      $table.find('thead tr th').each(function(i, td) {
+        var $col;
+        return $col = $('<col/>').appendTo($colgroup);
+      });
+      this.refreshTableWidth($table);
+    }
+    $resizeHandle = $('<div />', {
+      "class": 'simditor-resize-handle',
+      contenteditable: 'false'
+    }).appendTo($wrapper);
+    $wrapper.on('mousemove', 'td, th', function(e) {
+      var $col, $td, index, ref, ref1, x;
       if ($wrapper.hasClass('resizing')) {
         return;
       }
@@ -5208,12 +5119,11 @@ TableButton = (function(superClass) {
       }
       return $resizeHandle.css('left', $td.position().left + $td.outerWidth() - 5).data('td', $td).data('col', $col).show();
     });
-    $(document).on('mouseleave.simditor-table', '.simditor-table', function(e) {
-      return $(this).find('.simditor-resize-handle').hide();
+    $wrapper.on('mouseleave', function(e) {
+      return $resizeHandle.hide();
     });
-    return $(document).on('mousedown.simditor-resize-handle', '.simditor-resize-handle', function(e) {
-      var $handle, $leftCol, $leftTd, $rightCol, $rightTd, $wrapper, minWidth, startHandleLeft, startLeftWidth, startRightWidth, startX, tableWidth;
-      $wrapper = $(this).parent('.simditor-table');
+    return $wrapper.on('mousedown', '.simditor-resize-handle', function(e) {
+      var $handle, $leftCol, $leftTd, $rightCol, $rightTd, minWidth, startHandleLeft, startLeftWidth, startRightWidth, startX, tableWidth;
       $handle = $(e.currentTarget);
       $leftTd = $handle.data('td');
       $leftCol = $handle.data('col');
@@ -5244,7 +5154,6 @@ TableButton = (function(superClass) {
         return $handle.css('left', startHandleLeft + deltaX);
       });
       $(document).one('mouseup.simditor-resize-table', function(e) {
-        $editor.sync();
         $(document).off('.simditor-resize-table');
         return $wrapper.removeClass('resizing');
       });
@@ -5281,13 +5190,11 @@ TableButton = (function(superClass) {
   };
 
   TableButton.prototype.decorate = function($table) {
-    var $colgroup, $headRow, $resizeHandle, $tbody, $thead, $wrapper;
+    var $headRow, $tbody, $thead;
     if ($table.parent('.simditor-table').length > 0) {
       this.undecorate($table);
     }
     $table.wrap('<div class="simditor-table"></div>');
-    $wrapper = $table.parent('.simditor-table');
-    $colgroup = $table.find('colgroup');
     if ($table.find('thead').length < 1) {
       $thead = $('<thead />');
       $headRow = $table.find('tr').first();
@@ -5300,18 +5207,7 @@ TableButton = (function(superClass) {
         $table.prepend($thead);
       }
     }
-    if ($colgroup.length < 1) {
-      $colgroup = $('<colgroup/>').prependTo($table);
-      $table.find('thead tr th').each(function(i, td) {
-        var $col;
-        return $col = $('<col/>').appendTo($colgroup);
-      });
-      this.refreshTableWidth($table);
-    }
-    $resizeHandle = $('<div />', {
-      "class": 'simditor-resize-handle',
-      contenteditable: 'false'
-    }).appendTo($wrapper);
+    this.initResize($table);
     return $table.parent();
   };
 
@@ -5393,18 +5289,14 @@ TableButton = (function(superClass) {
   };
 
   TableButton.prototype.refreshTableWidth = function($table) {
-    return setTimeout((function(_this) {
-      return function() {
-        var cols, tableWidth;
-        tableWidth = $table.width();
-        cols = $table.find('col');
-        return $table.find('thead tr th').each(function(i, td) {
-          var $col;
-          $col = cols.eq(i);
-          return $col.attr('width', ($(td).outerWidth() / tableWidth * 100) + '%');
-        });
-      };
-    })(this), 0);
+    var cols, tableWidth;
+    tableWidth = $table.width();
+    cols = $table.find('col');
+    return $table.find('thead tr th').each(function(i, td) {
+      var $col;
+      $col = cols.eq(i);
+      return $col.attr('width', ($(td).outerWidth() / tableWidth * 100) + '%');
+    });
   };
 
   TableButton.prototype.setActive = function(active) {
