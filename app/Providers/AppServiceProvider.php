@@ -23,9 +23,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
 	{
+	    // 分页使用 Bootstrap。默认 Laravel 分页没有使用 Bootstrap
+        \Illuminate\Pagination\Paginator::useBootstrap();
+
 		\App\Models\User::observe(\App\Observers\UserObserver::class);
 		\App\Models\Topic::observe(\App\Observers\TopicObserver::class);
-
-        //
     }
 }

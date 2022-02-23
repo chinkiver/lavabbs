@@ -1,5 +1,5 @@
 // Fonts
-@import url('https://fonts.googleapis.com/css?family=Nunito');
+//@import url('https://fonts.googleapis.com/css?family=Nunito');
 
 // Variables
 @import 'variables';
@@ -78,3 +78,107 @@ body {
   border-radius: 4px;
   padding: 3px;
 }
+
+/* Topic Index Page */
+
+.topics-index-page {
+  .topic-list {
+    .nav>li>a {
+      position: relative;
+      display: block;
+      padding: 5px 14px;
+      font-size: 0.9em;
+    }
+
+    a {
+      color: #444444;
+    }
+
+    .meta {
+      font-size: 0.9em;
+      color: #b3b3b3;
+
+      a {
+        color: #b3b3b3;
+      }
+    }
+
+    .badge {
+      background-color: #d8d8d8;
+    }
+
+    hr {
+      margin-top: 12px;
+      margin-bottom: 12px;
+      border: 0;
+      border-top: 1px solid #dcebf5;
+    }
+  }
+}
+
+.list-unstyled {
+  padding-left: 0;
+  list-style: none;
+}
+
+/* media */
+
+.media {
+  margin-top: 15px;
+}
+.media:first-child {
+  margin-top: 0;
+}
+.media,
+.media-body {
+  overflow: hidden;
+  zoom: 1;
+}
+.media-body {
+  width: 10000px;
+}
+.media-object {
+  display: block;
+}
+.media-object.img-thumbnail {
+  max-width: none;
+}
+.media-right,
+.media > .pull-right {
+  padding-left: 10px;
+}
+.media-left,
+.media > .pull-left {
+  padding-right: 10px;
+}
+.media-left,
+.media-right,
+.media-body {
+  display: table-cell;
+  vertical-align: top;
+}
+.media-middle {
+  vertical-align: middle;
+}
+.media-bottom {
+  vertical-align: bottom;
+}
+.media-heading {
+  margin-top: 0;
+  margin-bottom: 5px;
+}
+.media-list {
+  padding-left: 0;
+  list-style: none;
+}
+
+.float-right {
+  float: right !important;
+}
+
+/* Add container and footer space */
+
+#app > div.container {
+  margin-bottom: 100px;
+}
+
