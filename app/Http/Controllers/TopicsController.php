@@ -33,6 +33,13 @@ class TopicsController extends Controller
         return view('topics.index', compact('topics'));
     }
 
+    /**
+     * 显示话题详细
+     *
+     * @param Topic $topic
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
     public function show(Topic $topic)
     {
         return view('topics.show', compact('topic'));
@@ -72,26 +79,55 @@ class TopicsController extends Controller
         return redirect()->route('topics.show', $topic->id)->with('success', '帖子创建成功！');
     }
 
+    /**
+     * 显示编辑话题页面
+     *
+     * @param Topic $topic
+     *
+     * @return \Illuminate\Contracts\View\View
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
     public function edit(Topic $topic)
     {
+        // Police
         $this->authorize('update', $topic);
-        return view('topics.create_and_edit', compact('topic'));
+
+        $categories = Category::all();
+
+        return view('topics.create_and_edit', compact('topic', 'categories'));
     }
 
+    /**
+     * 保存编辑后的话题
+     *
+     * @param TopicRequest $request
+     * @param Topic        $topic
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
     public function update(TopicRequest $request, Topic $topic)
     {
         $this->authorize('update', $topic);
         $topic->update($request->all());
 
-        return redirect()->route('topics.show', $topic->id)->with('message', 'Updated successfully.');
+        return redirect()->route('topics.show', $topic->id)->with('success', '编辑成功！');
     }
 
+    /**
+     * 删除话题
+     *
+     * @param Topic $topic
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
     public function destroy(Topic $topic)
     {
         $this->authorize('destroy', $topic);
         $topic->delete();
 
-        return redirect()->route('topics.index')->with('message', 'Deleted successfully.');
+        return redirect()->route('topics.index')->with('success', '成功删除！');
     }
 
     /**
