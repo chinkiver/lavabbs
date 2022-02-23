@@ -1,4 +1,4 @@
-  @extends('layouts.app')
+@extends('layouts.app')
 
 @section('title', $user->name . ' 的个人中心')
 
@@ -29,9 +29,14 @@
 
       <hr>
 
-      <div class="card ">
+      <div class="card">
         <div class="card-body">
-          暂无数据 ~_~
+          <ul class="nav nav-tabs">
+            <li class="nav-item"><a class="nav-link active bg-transparent" href="#">Ta 的话题</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Ta 的回复</a></li>
+          </ul>
+
+          @include('users._topics', ['topics' => $user->topics()->recent()->paginate(5)])
         </div>
       </div>
     </div>

@@ -25,7 +25,10 @@ class UsersController extends Controller
      */
     public function show(User $user)
     {
-        return view('users.show', compact('user'));
+        // 获取用户所发布的话题
+        $topics = $user->topics;
+
+        return view('users.show', compact('user', 'topics'));
     }
 
     /**
