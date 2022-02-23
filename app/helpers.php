@@ -32,3 +32,15 @@ function random_avatar(bool $onlyAvatarArray = false):array|string
 
     return $onlyAvatarArray ? $avatar : $avatar[random_int(1, 5)];
 }
+
+/**
+ * 根据路由信息，获取当前反问话题种类
+ *
+ * @param $category_id
+ *
+ * @return string
+ */
+function category_nav_active($category_id)
+{
+    return active_class((if_route('categories.show') && if_route_param('category', $category_id)));
+}
