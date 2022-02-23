@@ -48,7 +48,7 @@ class UsersController extends Controller
 
         // 如果存在文件信息
         if ($request->avatar) {
-            $uploadResult = $uploadHandler->store($request->avatar, 'avatars', $user->id);
+            $uploadResult = $uploadHandler->store($request->avatar, 'avatars', $user->id, 416);
 
             if ($uploadResult) {
                 $data['avatar'] = $uploadResult['path'];
