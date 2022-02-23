@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Topic;
 use App\Http\Requests\TopicRequest;
+use Illuminate\Http\Request;
 
 class TopicsController extends Controller
 {
@@ -15,11 +16,16 @@ class TopicsController extends Controller
     /**
      * 显示话题列表页
      *
+     * @param Request $request
+     * @param Topic   $topic
+     *
      * @return \Illuminate\Contracts\View\View
      */
-    public function index()
+    public function index(Request $request, Topic $topic)
     {
-        $topics = Topic::with('user', 'category')->paginate(10);
+        $topics = $topic->withOrder($request->order)
+            ->with('user', 'category')
+            ->paginate(10);
 
         return view('topics.index', compact('topics'));
     }
