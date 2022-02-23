@@ -2,21 +2,8 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
-
-class UserRequest extends FormRequest
+class UserRequest extends Request
 {
-    public function authorize()
-    {
-        return true;
-    }
-
-    /**
-     * 验证规则
-     *
-     * @return \string[][]
-     */
     public function rules()
     {
         return [
@@ -27,9 +14,6 @@ class UserRequest extends FormRequest
         ];
     }
 
-    /**
-     * 自定义错误信息
-     */
     public function messages()
     {
         return [
