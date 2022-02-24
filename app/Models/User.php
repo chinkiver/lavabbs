@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Auth\MustVerifyEmail as MustVerifyEmailTrait;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements MustVerifyEmailContract
 {
@@ -18,6 +19,9 @@ class User extends Authenticatable implements MustVerifyEmailContract
         // 将 Notifiable 中的 notify 方法重新命名为 laravelNotify
         notify as protected laravelNotify;
     }
+
+    // laravel-permission 提供的 Trait
+    use HasRoles;
 
     /**
      * 自定义 notify
