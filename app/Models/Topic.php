@@ -74,4 +74,17 @@ class Topic extends Model
         // 按照创建时间排序
         return $query->orderBy('created_at', 'desc');
     }
+
+    /**
+     * 将路由 topics.show 进行转换
+     *
+     * @param array $params
+     *
+     * @return string
+     */
+    public function link($params = [])
+    {
+        // array_merge 把多个数组合成一个数组
+        return route('topics.show', array_merge([$this->id, $this->slug], $params));
+    }
 }

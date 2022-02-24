@@ -36,12 +36,18 @@ class TopicsController extends Controller
     /**
      * 显示话题详细
      *
-     * @param Topic $topic
+     * @param Request $request
+     * @param Topic   $topic
      *
-     * @return \Illuminate\Contracts\View\View
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function show(Topic $topic)
+    public function show(Request $request, Topic $topic)
     {
+        // URL 矫正
+        if (! empty($topic->slug) && $topic->slug != $request->slug) {
+            return redirect($topic->link(), 301);
+        }
+
         return view('topics.show', compact('topic'));
     }
 
@@ -76,7 +82,7 @@ class TopicsController extends Controller
 
         $topic->save();
 
-        return redirect()->route('topics.show', $topic->id)->with('success', '帖子创建成功！');
+        return redirect()->to($topic->link())->with('success', '帖子创建成功！');
     }
 
     /**
@@ -111,7 +117,7 @@ class TopicsController extends Controller
         $this->authorize('update', $topic);
         $topic->update($request->all());
 
-        return redirect()->route('topics.show', $topic->id)->with('success', '编辑成功！');
+        return redirect()->to($topic->link())->with('success', '编辑成功！');
     }
 
     /**

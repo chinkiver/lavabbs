@@ -27,8 +27,13 @@ Route::resource('/users', 'UsersController', [
 
 // 话题
 Route::resource('topics', 'TopicsController', [
-    'only' => ['index', 'show', 'create', 'store', 'update', 'edit', 'destroy'],
+    'only' => ['index', 'create', 'store', 'update', 'edit', 'destroy'],
 ]);
+
+// 可以兼容以下两种路由
+// http://larabbs.test/topics/115
+// http://larabbs.test/topics/115/slug-translation-test
+Route::get('topics/{topic}/{slug?}', 'TopicsController@show')->name('topics.show');
 
 // 分类
 Route::resource('categories', 'CategoriesController', [
