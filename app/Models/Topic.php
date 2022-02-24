@@ -87,4 +87,14 @@ class Topic extends Model
         // array_merge 把多个数组合成一个数组
         return route('topics.show', array_merge([$this->id, $this->slug], $params));
     }
+
+    /**
+     * 一个话题拥有的回复
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function replies()
+    {
+        return $this->hasMany(Reply::class);
+    }
 }

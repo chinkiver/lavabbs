@@ -12,4 +12,3 @@ class TopicsTableSeeder extends Seeder
         Topic::factory()->count(111)->create();
     }
 }
-
