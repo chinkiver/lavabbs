@@ -20,6 +20,8 @@ class UsersTableSeeder extends Seeder
 
         // 创建管理员
         $manager = User::find(2);
+        $manager->name = 'manager';
+        $manager->username = '管理员';
         $manager->assignRole('Maintainer');
         $manager->save();
     }
