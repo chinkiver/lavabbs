@@ -27,4 +27,10 @@ class TopicObserver
             dispatch(new TranslateSlug($topic));
         }
     }
+
+    public function deleted(Topic $topic)
+    {
+        // 同步删除回复
+        \DB::table('replies')->where('topic_id', $topic->id)->delete();
+    }
 }

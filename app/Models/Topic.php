@@ -6,7 +6,7 @@ class Topic extends Model
 {
     // 可被批量编辑的字段
     protected $fillable = [
-        'title', 'body', 'category_id', 'excerpt', 'slug'
+        'title', 'body', 'category_id', 'excerpt', 'slug',
     ];
 
     /**
@@ -96,5 +96,14 @@ class Topic extends Model
     public function replies()
     {
         return $this->hasMany(Reply::class);
+    }
+
+    /**
+     * 更新回复数量
+     */
+    public function updateReplyCount()
+    {
+        $this->reply_count = $this->replies->count();
+        $this->save();
     }
 }
