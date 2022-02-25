@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Handlers\ImageUploadHandler;
 use App\Models\Category;
+use App\Models\Link;
 use App\Models\Topic;
 use App\Http\Requests\TopicRequest;
 use App\Models\User;
@@ -22,10 +23,12 @@ class TopicsController extends Controller
      *
      * @param Request $request
      * @param Topic   $topic
+     * @param User    $user
+     * @param Link    $link
      *
      * @return \Illuminate\Contracts\View\View
      */
-    public function index(Request $request, Topic $topic, User $user)
+    public function index(Request $request, Topic $topic, User $user, Link $link)
     {
         // 这里的 User $user 只是一个便捷的 $user = new User 写法而已
 
@@ -33,9 +36,13 @@ class TopicsController extends Controller
             ->with('user', 'category')
             ->paginate(10);
 
+        // 活跃用户
         $activeUsers = $user->getActiveUsers();
 
-        return view('topics.index', compact('topics', 'activeUsers'));
+        // 推荐内容
+        $links = $link->getAllCached();
+
+        return view('topics.index', compact('topics', 'activeUsers', 'links'));
     }
 
     /**
