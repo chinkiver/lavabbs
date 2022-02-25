@@ -23,11 +23,11 @@ function route_class():string
 function random_avatar(bool $onlyAvatarArray = false):array|string
 {
     static $avatar = [
-        1 => 'images/avatar/apple.png',
-        2 => 'images/avatar/grapes.png',
-        3 => 'images/avatar/lemon.png',
-        4 => 'images/avatar/mango.png',
-        5 => 'images/avatar/orange.png',
+        1 => 'apple.png',
+        2 => 'grapes.png',
+        3 => 'lemon.png',
+        4 => 'mango.png',
+        5 => 'orange.png',
     ];
 
     return $onlyAvatarArray ? $avatar : $avatar[random_int(1, 5)];
