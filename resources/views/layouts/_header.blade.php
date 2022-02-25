@@ -44,14 +44,25 @@
               <img src="{{ asset(Auth::user()->avatar) }}" class="img-responsive img-circle" width="30px" height="30px">
               {{ Auth::user()->name }}
             </a>
+
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              @can('manage_contents')
+                <a class="dropdown-item" href="{{ url(config('administrator.uri')) }}">
+                  <i class="fas fa-tachometer-alt mr-2"></i>&nbsp;管理后台
+                </a>
+                <div class="dropdown-divider"></div>
+              @endcan
+
               <a class="dropdown-item" href="{{ route('users.show', Auth::user()) }}">
                 <i class="far fa-user mr-2"></i>&nbsp;个人中心
               </a>
+
               <a class="dropdown-item" href="{{ route('users.edit', Auth::user()) }}">
                 <i class="far fa-edit mr-2"></i>&nbsp;编辑资料
               </a>
+
               <div class="dropdown-divider"></div>
+
               <a class="dropdown-item" id="logout" href="#">
                 <form action="{{ route('logout') }}" method="POST" onsubmit="return confirm('您确定要推出吗？');">
                   @csrf
