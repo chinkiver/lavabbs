@@ -6,6 +6,7 @@ use App\Handlers\ImageUploadHandler;
 use App\Models\Category;
 use App\Models\Topic;
 use App\Http\Requests\TopicRequest;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -24,13 +25,17 @@ class TopicsController extends Controller
      *
      * @return \Illuminate\Contracts\View\View
      */
-    public function index(Request $request, Topic $topic)
+    public function index(Request $request, Topic $topic, User $user)
     {
+        // 这里的 User $user 只是一个便捷的 $user = new User 写法而已
+
         $topics = $topic->withOrder($request->order)
             ->with('user', 'category')
             ->paginate(10);
 
-        return view('topics.index', compact('topics'));
+        $activeUsers = $user->getActiveUsers();
+
+        return view('topics.index', compact('topics', 'activeUsers'));
     }
 
     /**

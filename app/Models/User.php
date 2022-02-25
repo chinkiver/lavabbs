@@ -23,6 +23,9 @@ class User extends Authenticatable implements MustVerifyEmailContract
     // laravel-permission 提供的 Trait
     use HasRoles;
 
+    // 统计活跃用户数
+    use Traits\ActiveUserHelper;
+
     /**
      * 自定义 notify
      *
