@@ -114,4 +114,34 @@ class User extends Authenticatable implements MustVerifyEmailContract
         $this->save();
         $this->unreadNotifications->markAsRead();
     }
+
+    /**
+     * 修改字段 password 写入数据库前的操作
+     *
+     * @param $value
+     */
+    public function setPasswordAttribute($value)
+    {
+        if (strlen($value) != 60) {
+            // 不等于 60，做密码加密处理
+            $value = bcrypt($value);
+        }
+
+        $this->attributes['password'] = $value;
+    }
+
+    /**
+     * 修改 avatar 保存规则
+     *
+     * @param $path
+     */
+    public function setAvatarAttribute($path)
+    {
+        // 如果不是 `http` 子串开头，那就是从后台上传的，需要补全 URL
+        if (! \Str::startsWith($path, 'http')) {
+            $path = config('app.url') . "/uploads/images/avatars/$path";
+        }
+
+        $this->attributes['avatar'] = $path;
+    }
 }
