@@ -2,6 +2,7 @@
 
 namespace App\Http;
 
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -97,4 +98,18 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
     ];
+
+    /**
+     * 定时任务
+     *
+     * @param Schedule $schedule
+     */
+    public function schedule(Schedule $schedule)
+    {
+        // 每隔一个小时执行一遍
+        $schedule->command('larabbs:calculate-active-user')->hourly();
+
+        // 每日零时执行一次
+        $schedule->command('larabbs:sync-user-activated-at')->dailyAt('00:00');
+    }
 }
