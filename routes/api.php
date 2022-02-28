@@ -14,14 +14,20 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::prefix('v1')->name('api.v1.')->group(function() {
+Route::prefix('v1')->namespace('Api\\V1')->name('api.v1.')->group(function() {
+
+    // 显示 Version
     Route::get('version', function() {
-        return 'this is version 1';
+        return '当前请求的接口版本为 V1.0';
     })->name('version');
+
+    // 发送短信验证码
+    Route::post('verificationCodes', 'VerificationCodesController@store')
+        ->name('verificationCodes.store');
 });
 
 Route::prefix('v2')->name('api.v2.')->group(function() {
     Route::get('version', function() {
-        return 'this is version 2';
+        return '当前请求的接口版本为 V2.0';
     })->name('version');
 });
