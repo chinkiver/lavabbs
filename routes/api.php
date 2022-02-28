@@ -17,26 +17,33 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('v1')
     ->namespace('Api\\V1')
     ->name('api.v1.')
-//    ->middleware('throttle:10,1') // 1 分钟 1 次
     ->group(function() {
 
         Route::middleware('throttle:' . config('api.rate_limits.sign'))
             ->group(function() {
-                // 用户注册，发送短信验证码
+
+                // 用户注册，图片验证码
+                Route::post('captcha', 'CaptchaController@store')
+                    ->name('captcha.store');
+
+                // 用户注册，发送短信验证码（图形验证码，验证通过后，方可调用）
                 Route::post('verificationCodes', 'VerificationCodesController@store')
                     ->name('verificationCodes.store');
 
                 // 用户注册
                 Route::post('users', 'UsersController@store')
                     ->name('users.store');
+
             });
 
         Route::middleware('throttle' . config('api.rate_limits.access'))
             ->group(function() {
+
                 // 显示 Version
                 Route::get('version', function() {
                     return '当前请求的接口版本为 V1.0';
                 })->name('version');
+
             });
     });
 
