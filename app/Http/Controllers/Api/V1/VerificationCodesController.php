@@ -14,7 +14,7 @@ class VerificationCodesController extends Controller
 {
 
     /**
-     * 发送短信验证码
+     * 用户注册，发送短信验证码
      *
      * @param VerificationCodeRequest $request
      * @param EasySms                 $easySms
