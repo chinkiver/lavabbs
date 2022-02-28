@@ -75,6 +75,7 @@ class Kernel extends HttpKernel
 
         'api' => [
             // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+            \App\Http\Middleware\AcceptHeader::class, // 给 api 路由添加 Accept = application/json
             'throttle:api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
