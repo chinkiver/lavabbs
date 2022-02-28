@@ -34,6 +34,11 @@ Route::prefix('v1')
                 Route::post('users', 'UsersController@store')
                     ->name('users.store');
 
+                // 三方用户登录
+                Route::post('socials/{social_type}/authorizations', 'AuthorizationsController@socialStore')
+                    ->where('social_type', 'wechat') // 对 social_type 进行了限制，只会匹配 wechat。多种参考 ->where('social_type', 'wechat|weibo')
+                    ->name('socials.authorizations.store');
+
             });
 
         Route::middleware('throttle' . config('api.rate_limits.access'))
