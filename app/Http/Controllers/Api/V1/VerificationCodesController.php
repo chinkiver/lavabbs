@@ -26,7 +26,7 @@ class VerificationCodesController extends Controller
     public function store(VerificationCodeRequest $request, EasySms $easySms, SmsSend $smsSend)
     {
         // Key
-        $key = 'verificationCode:' . Str::random(15);
+        $key = 'verificationCode_' . Str::random(15);
 
         // 获得手机号码
         $phone = $request->phone;

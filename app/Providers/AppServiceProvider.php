@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -38,5 +39,8 @@ class AppServiceProvider extends ServiceProvider
             // 是否是站长
             return \Auth::user()->hasRole('Founder');
         });
+
+        // 取消 data 这一层
+        JsonResource::withoutWrapping();
     }
 }
